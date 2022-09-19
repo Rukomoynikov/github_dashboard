@@ -1,0 +1,10 @@
+{
+  "github-dashboard-container": {
+    "image": ":github-dashboard-container-service.github-dashboard-image.latest",
+    "ports": { "4000": "HTTP" },
+    "environment": {
+      "SECRET_KEY_BASE": "qjv4GuK9A4Yp234EqCy/+acXaklP8sTz0mjBnNkl8BsgPLzOFiIujgxEPoWSfDnx",
+      "PHX_HOST": "github-dashboard-container-service.ehce41ggd1hge.us-east-1.cs.amazonlightsail.com"
+    }
+  }
+}
