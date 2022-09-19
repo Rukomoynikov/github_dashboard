@@ -6,12 +6,15 @@ on:
 permissions:
   contents: read
 
+env:
+  CONTAINER_SERVICE_NAME: github-dashboard-container-service
+  AWS_REGION: us-east-1
+  DOCKER_TAG: github-dashboard-image
+
 jobs:
   build:
-
     name: Build and test
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v3
     - name: Set up Elixir
@@ -29,3 +32,25 @@ jobs:
       run: mix deps.get
     - name: Run tests
       run: mix test
+  deploy:
+    name: Deploy to Lightsail
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build docker container
+      run: |
+        docker build . -t $DOCKER_TAG
+    - name: Install LightSail AWS CLI plugin
+      run: |
+        curl "https://s3.us-west-2.amazonaws.com/lightsailctl/latest/linux-amd64/lightsailctl" -o "/usr/local/bin/lightsailctl"
+        sudo chmod +x /usr/local/bin/lightsailctl
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }} 
+    - name: Push new version to LightSail
+      run: aws lightsail push-container-image --region $AWS_REGION --service-name $CONTAINER_SERVICE_NAME --label $DOCKER_TAG --image $DOCKER_TAG:latest
+    - name: Deploy pushed container
+      run:  aws lightsail create-container-service-deployment --service-name $CONTAINER_SERVICE_NAME --containers file://lightsail/containers.json --public-endpoint file://lightsail/public-endpoint.json

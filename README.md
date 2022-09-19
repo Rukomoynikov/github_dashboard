@@ -16,3 +16,9 @@ Ready to run in production? Please [check our deployment guides](https://hexdocs
   * Docs: https://hexdocs.pm/phoenix
   * Forum: https://elixirforum.com/c/phoenix-forum
   * Source: https://github.com/phoenixframework/phoenix
+
+# Application example for the article 
+
+**Running application
+- Run `docker compose up` to start it with help of Docker
+- Run `mix phx.server` to start it with help of local mix

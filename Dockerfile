@@ -21,21 +21,23 @@ RUN mix do deps.get, compile
 # RELEASE
 # -----------------
 FROM build AS release
+ARG MIX_ENV=prod
 # digests and compresses static files
 RUN mix assets.deploy
 # generate release executable
+RUN mix phx.gen.release
 RUN mix release
 
-# -----------------
-# PRODUCTION
-# -----------------
-FROM alpine:3.14.3
+# # -----------------
+# # PRODUCTION
+# # -----------------
+FROM elixir:alpine
 WORKDIR /app
 ARG MIX_ENV=prod
 
-# install dependencies
+# # install dependencies
 RUN apk add ncurses-libs curl
-COPY --from=release /app/_build/$MIX_ENV/rel/github_dashboard ./
+COPY --from=release /app/_build/prod/rel/github_dashboard ./
 
-# start application
-CMD ["bin/app", "start"]
+# # start application
+CMD ["bin/server", "start"]
