@@ -17,7 +17,8 @@ defmodule GithubDashboardWeb.Router do
   scope "/", GithubDashboardWeb do
     pipe_through :browser
 
-    get "/", PageController, :index
+    live "/", HeloLive
+    # get "/", PageController, :index
   end
 
   # Other scopes may use custom stacks.
